@@ -13,9 +13,10 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tools/1.2.7/jquery.tools.min.js"></script>
 
 	<!-- Site JS -->
-	<script type="text/javascript" src="./js/router.js"></script>
-	<script type="text/javascript" src="./js/register.js"></script>
-	<script type="text/javascript" src="./js/app.js"></script>
+	<script type="text/javascript" src="./js/controllers/register.js"></script>
+	<script type="text/javascript" src="./js/modules/router.js"></script>
+	<script type="text/javascript" src="./js/modules/auth.js"></script>
+	<script type="text/javascript" src="./js/modules/app.js"></script>
 	<script type="text/javascript" src="./js/site.js"></script>
 </head>
 
@@ -30,7 +31,7 @@
 		<a href="#about" rel="modal:open">About</a>
 		<a data-route="game">Game</a>
 		<!-- Right -->
-		<a data-route="login" class="pull-right highlight">Login</a>
+		<a data-route="login" class="pull-right btn">Login</a>
 		<a data-route="register" class="pull-right">Register</a>
 	</div>
 	<div id="content">
@@ -44,7 +45,7 @@
 
 		<!-- Register -->
 		<section data-page="register">
-			<form id="registration-form">
+			<form id="registration-form" class="center-absolute">
 				<fieldset>
 					<h1>Registration</h1>
 
@@ -78,6 +79,24 @@
 
 		<!-- Login -->
 		<section data-page="login">
+			<form id="login-form" class="center-absolute">
+				<fieldset>
+					<h1>Login</h1>
+
+					<p>
+						<label>Username:</label>
+						<input type="text" name="username" pattern="[a-zA-Z0-9]+" minlength="5" maxlength="15"
+							required="required" />
+					</p>
+
+					<p>
+						<label>Password:</label>
+						<input type="password" name="password" minlength="6" required="required" />
+					</p>
+				
+					<button type="submit" class="btn center-margin">Login</button>
+				</fieldset>
+			</form>
 		</section>
 
 		<!-- Settings -->

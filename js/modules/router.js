@@ -1,4 +1,4 @@
-class Router {
+class RouterModule {
 	constructor(defaultPage) {
 		var context = this;
 

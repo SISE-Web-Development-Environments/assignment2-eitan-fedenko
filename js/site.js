@@ -1,6 +1,10 @@
+var auth;
 var router;
+var controllers = {};
 
 $(document).ready(function () {
-	router = new Router('welcome');
-	RegistrationController.setupValidator();
+	auth = new AuthModule();
+	router = new RouterModule('welcome');
+	controllers['registration'] = new RegistrationController();
+	controllers['registration'].bootstrap()
 });
