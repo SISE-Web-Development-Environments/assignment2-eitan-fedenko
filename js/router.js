@@ -1,19 +1,36 @@
 class Router {
-	constructor(menuContainer) {
+	constructor(defaultPage) {
 		var context = this;
 
-		menuContainer.children('a').each(function () {
-			let route = $(this).data('route');
-			$(this).attr('href', '#');
-			$(this).click(function () {
-				context.navigate(route);
-			});
+		const pageLinks = $('a[data-route]');
+
+		pageLinks.each(function () {
+			context.processLink(this);
+		});
+
+		this.navigate(defaultPage, 'content');
+	}
+
+	processLink(link) {
+		var context = this;
+
+		let route = $(link).data('route');
+		$(link).attr('href', '#');
+		$(link).click(function () {
+			context.navigate(route);
 		});
 	}
 
+	cleanState() {
+		$('.error').hide();
+	}
 
 	navigate(page) {
+		const sectionContainer = $(`section[data-page=${page}]`);
+
+		this.cleanState();
+
 		$('section').removeClass('show');
-		$(`section[data-page=${page}]`).addClass('show');
+		sectionContainer.addClass('show');
 	}
 }

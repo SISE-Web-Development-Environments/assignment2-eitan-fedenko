@@ -1,5 +1,50 @@
+@font-face {
+    font-family: BeautyMountains;
+    src: url(../assets/fonts/BeautyMountains.ttf);
+  }
+
+#header {
+    background-color: #263238;
+}
+
+#header > a{
+    font-family: BeautyMountains;
+    line-height: 8vh;
+    font-size: 5vh;
+    color:#FFC107;
+}
+
+#footer {
+    line-height: 7vh;
+    background-color: rgba(255,255,255,0.1);
+}
+
+#menu {
+    background-color: #fff176;
+}
+
+#menu > a {
+    display: inline-block;
+    line-height: 5vh;
+    padding: 0 .5em;
+    font-size: 2.5vh;
+    color: #212121;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#menu > a.highlight {
+    background-color: #f9a825;
+    font-weight: bold;
+}
+
+#menu > a:hover {
+    background-color: #FFDB21;
+}
+
 section {
     display: none;
+    position: relative;
+    height: 80vh;
 }
 
 section.show {

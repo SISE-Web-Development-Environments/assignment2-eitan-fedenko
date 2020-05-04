@@ -1,0 +1,62 @@
+body,html {
+    padding: 0;
+    margin:0;
+}
+a {
+    text-decoration: none;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 1.2em;
+    background-color: #102027;
+    color: #BDBDBD;
+}
+
+.pull-right { 
+    float:right;
+}
+
+body > div {
+    padding: 0 2vw;
+}
+
+.center-absolute {
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.disable-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Opera and Firefox */
+  }
+
+/* Layouts */
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    background-color: #FFC107;
+    color: #212121;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+}
+.btn:hover {
+    background-color: #FFDB21;
+}
+
+.btn.big {
+    font-size: 2em;
+    padding: 1em 2em;
+}
