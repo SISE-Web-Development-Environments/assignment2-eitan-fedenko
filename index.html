@@ -17,6 +17,8 @@
 	<!-- Site JS -->
 	<script type="text/javascript" src="./js/models/enemy.js"></script>
 	<script type="text/javascript" src="./js/models/prize.js"></script>
+	<script type="text/javascript" src="./js/models/extraLife.js"></script>
+	<script type="text/javascript" src="./js/models/extraTime.js"></script>
 	<script type="text/javascript" src="./js/controllers/register.js"></script>
 	<script type="text/javascript" src="./js/controllers/login.js"></script>
 	<script type="text/javascript" src="./js/controllers/game.js"></script>
@@ -34,10 +36,10 @@
 		<a data-route="welcome">Eitan's Pacman</a>
 		<!-- Menu -->
 		<div class="dropdown">
-			<a data-dropdown="dropdown-menu">
+			<a data-dropdown="dropdownMenu">
 				<img src="assets/images/menu.png" alt="Site Menu" class="menu-icon" />
 			</a>
-			<div id="dropdown-menu" class="dropdown-content">
+			<div id="dropdownMenu" class="dropdown-content">
 				<a data-route="settings">Settings</a>
 				<a href="#about" rel="modal:open">About</a>
 			</div>
@@ -55,7 +57,7 @@
 
 		<!-- Register -->
 		<section data-page="register">
-			<form id="registration-form" class="center-absolute">
+			<form id="registrationForm" class="center-absolute">
 				<fieldset>
 					<h1 class="page-title">Registration</h1>
 
@@ -89,7 +91,7 @@
 
 		<!-- Login -->
 		<section data-page="login">
-			<form id="login-form" class="center-absolute">
+			<form id="loginForm" class="center-absolute">
 				<fieldset>
 					<h1 class="page-title">Login</h1>
 
@@ -140,15 +142,15 @@
 
 		<!-- Game -->
 		<section data-page="game">
-			<div id="game-container">
+			<div id="gameContainer">
 				<label id="lblName"></label>
-				<div id="game-info">
+				<div id="gameInfo">
 					<div id="score">
 						<label for="lblScore">SCORE:</label>
 						<input id="lblScore" type="text" />
 					</div>
 					<div id="time">
-						<label for="lblTime">TIME:</label>
+						<label for="lblTime">REMAINING TIME:</label>
 						<input id="lblTime" type="text" />
 					</div>
 					<div id="lives">
@@ -156,22 +158,27 @@
 						<input id="lblLives" type="text" />
 					</div>
 				</div>
-				<div id="game-wrapper">
-					<canvas id="canvas" class="center-absolute" height="600" width="600"></canvas>
+				<div id="gameWrapper">
+					<canvas id="gameCanvas" class="center-absolute" height="600" width="600"></canvas>
 				</div>
 			</div>
 		</section>
 
 		<!-- Result -->
 		<section data-page="result">
+			<canvas id="resultBackground"></canvas>
+
 			<div class="center-absolute">
-				<p>You have gained <span id="score-result">0</span> points</p>
+				<p>You have gained <span id="scoreResult">0</span> points</p>
 			</div>
 		</section>
 	</div>
 	<div id="footer">
 		Made by Eitan Fedenko 2020
 	</div>
+
+	
+	<script type="text/javascript" src="./js/particles.js"></script>
 </body>
 
 </html>

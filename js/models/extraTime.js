@@ -1,8 +1,8 @@
-class Enemy {
-    static assetName = "assets/sprites/enemy.svg";
+class ExtraTime {
+    static assetName = "assets/sprites/extraTime.png";
 
-    moveTicks = 4;
-    persistent = false; // whether it disapears when board resets
+    moveTicks = 50;
+    persistent = true; // whether it disapears when board resets
 
     constructor(x, y) {
         this.x = x;
@@ -14,23 +14,22 @@ class Enemy {
         if (--this.delay > 0)
             return;
             
-        let currentDistance = distanceMatrix[this.x][this.y];
-        let nextPos = [this.x, this.y];
         let positions = [[this.x - 1, this.y], [this.x + 1, this.y], [this.x, this.y - 1], [this.x, this.y + 1]];
+        let availablePositions = [];
         positions.forEach(pos => {
             let distanceRow = distanceMatrix[pos[0]]
             if (distanceRow === undefined)
                 return;
             let distanceAtPos = distanceRow[pos[1]];
-            if (distanceAtPos !== undefined && distanceAtPos >= 0 && distanceAtPos < currentDistance) {
-                nextPos = pos;
-                currentDistance = distanceAtPos;
+            if (distanceAtPos !== undefined && distanceAtPos >= 0) {
+                availablePositions.push(pos);
             }
-        });
+        });        
 
+        let nextPos = availablePositions[Math.floor(Math.random() * availablePositions.length)];
         this.x = nextPos[0];
         this.y = nextPos[1];
-
+        
         this.delay = this.moveTicks;
     }
 
@@ -39,10 +38,10 @@ class Enemy {
     }
 
     getAsset() {
-        return Enemy.assetName;
+        return ExtraTime.assetName;
     }
-
+    
     getValue() {
-        return { score: -10, lives: -1 };
+        return { time: 20 };
     }
 }

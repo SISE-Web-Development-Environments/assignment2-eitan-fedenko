@@ -38,21 +38,31 @@ class RouterModule {
 
 		this.cleanState();
 
+		this.invoke(this.currentPage, 'hide');
 		$('section').hide();
 		sectionContainer.show();
 
 		// Emit event
-		const subscription = this.subscriptions.find(sub => sub.page === page);
-		if (subscription !== undefined) {
-			subscription.callback();
-		}
+		this.invoke(page, 'show');
 
 		this.currentPage = page;
 	}
 
-	subscribe(page, callback) {
+	invoke(page, event) {
+		if (page === undefined)
+			return;
+
+		console.log(`Page ${page} invoked event ${event}`);
+		const subscription = this.subscriptions.find(sub => sub.page === page && sub.event === event);
+		if (subscription !== undefined) {
+			subscription.callback();
+		}
+	}
+
+	subscribe(page, event, callback) {
 		this.subscriptions.push({
 			page: page,
+			event: event,
 			callback: callback
 		});
 	}

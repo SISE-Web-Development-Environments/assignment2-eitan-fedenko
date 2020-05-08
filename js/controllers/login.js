@@ -11,7 +11,7 @@ class LoginController {
         const routerCtx = this.routerModule;
         const authCtx = this.authModule;
 
-        $('#login-form').submit(function (e) {
+        $('#loginForm').submit(function (e) {
             const form = $(this);
             e.preventDefault();
 

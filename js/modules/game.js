@@ -1,18 +1,21 @@
 var gameContext;
+var gameTicks;
 const boardSize = 10;
 
 class GameModule {
 	constructor() {
-		this.context = canvas.getContext("2d");
+		this.context = gameCanvas.getContext("2d");
 		this.shape = new Object();
 		this.rotate = 0;
 		this.availablePrizes = 1;
-
+		this.backgroundMusic = new Audio('assets/sounds/background.mp3');
+		this.backgroundMusic.volume = 0.05;
+		this.backgroundMusic.loop = true;
 		this.entities = [
 			new Prize(0, 0)
 		];
 
-		this.loadAssets(Enemy.assetName, Prize.assetName);
+		this.loadAssets(Enemy.assetName, Prize.assetName, ExtraTime.assetName, ExtraLife.assetName);
 
 		gameContext = this;
 	}
@@ -27,20 +30,16 @@ class GameModule {
 		this.assets = loaded;
 	}
 
-	placeEnemies() {
-		// Position entities
-		this.entities = this.entities.filter(entity => entity.getAsset().includes("prize")).concat([
-			new Enemy(0, 0),
-			new Enemy(0, boardSize - 1),
-			new Enemy(boardSize - 1, 0),
-			new Enemy(boardSize - 1, boardSize - 1)]);
-	}
 	startGame(gameFinishCallback) {
+		gameTicks = 0;
 		this.board = new Array();
-		this.score = 0;
 		this.pac_color = "yellow";
 		this.start_time = new Date();
-		this.lives = 5;
+		this.gameState = {
+			lives: 5,
+			score: 0,
+			time: 10
+		}
 		this.createBoard();
 		this.keysDown = {};
 		this.gameFinishCallback = gameFinishCallback;
@@ -59,6 +58,7 @@ class GameModule {
 			false
 		);
 		this.interval = setInterval(this.gameTick, 250);
+		this.backgroundMusic.play();
 	}
 
 	createBoard() {
@@ -114,6 +114,39 @@ class GameModule {
 		this.placeEnemies();
 	}
 
+	placeBonusEntities() {
+		// Extra life every 20 seconds * 4 ticks / second = 80 ticks
+		if (gameTicks % (20 * 4) === 15)
+			this.placeExtraLife();
+
+		if (this.extraTimeTimer > 0)
+			--this.extraTimeTimer;
+		if (this.extraTimeTimer === undefined || this.extraTimeTimer == 0)
+			this.placeExtraTime();
+	}
+
+	placeExtraTime() {
+		var [x, y] = this.findRandomEmptyCell();
+		this.entities.push(new ExtraTime(x, y));
+		this.extraTimeTimer = -1;
+	}
+
+	placeExtraLife() {
+		var [x, y] = this.findRandomEmptyCell();
+		this.entities.push(new ExtraLife(x, y));
+	}
+
+	placeEnemies() {
+		// Position entities
+		this.entities = this.entities
+			.filter(entity => entity.persistent) // Clear non-persistent entities
+			.concat([
+				new Enemy(0, 0),
+				new Enemy(0, boardSize - 1),
+				new Enemy(boardSize - 1, 0),
+				new Enemy(boardSize - 1, boardSize - 1)]);
+	}
+
 	findRandomEmptyCell() {
 		var i = Math.floor(Math.random() * 9 + 1);
 		var j = Math.floor(Math.random() * 9 + 1);
@@ -140,10 +173,10 @@ class GameModule {
 	}
 
 	draw() {
-		canvas.width = canvas.width; //clean this.board
-		lblScore.value = this.score;
-		lblTime.value = parseInt(this.time_elapsed);
-		lblLives.value = this.lives;
+		gameCanvas.width = gameCanvas.width; //clean this.board
+		lblScore.value = this.gameState.score;
+		lblTime.value = parseInt(this.remainingTime);
+		lblLives.value = this.gameState.lives;
 		for (var i = 0; i < boardSize; i++) {
 			for (var j = 0; j < boardSize; j++) {
 				var center = new Object();
@@ -192,10 +225,13 @@ class GameModule {
 	}
 
 	gameTick() {
+		gameTicks++;
+
 		gameContext.updatePosition();
 		gameContext.moveEntities();
 		gameContext.checkEntities();
-		gameContext.updateState();
+		gameContext.placeBonusEntities();
+		gameContext.updateGame();
 	}
 
 	updatePosition() {
@@ -226,30 +262,52 @@ class GameModule {
 			}
 		}
 		if (this.board[this.shape.i][this.shape.j] == 1) {
-			this.score++;
+			this.gameState.score++;
 		}
 		this.board[this.shape.i][this.shape.j] = 2;
 	}
 
-	updateState() {
+	updateGame() {
 		var currentTime = new Date();
-		this.time_elapsed = (currentTime - this.start_time) / 1000;
-		if (this.score >= 20 && this.time_elapsed <= 10) {
+		let time_elapsed = (currentTime - this.start_time) / 1000;
+		if (this.gameState.score >= 20 && time_elapsed <= 10) {
 			this.pac_color = "green";
 		}
+		this.remainingTime = this.gameState.time - time_elapsed;
 
 
-
-		// TODO: Check if game finished
-		// if() {
-		// 	this.gameFinished();
-		// }
+		if (this.remainingTime <= 0) {
+			this.gameFinished();
+		}
 
 		this.draw();
 	}
 
-	updateScore(difference) {
-		this.score += difference;
+
+
+
+	updateState(stateDiff) {
+		for (let [key, value] of Object.entries(stateDiff)) {
+			this.gameState[key] += value;
+
+
+			switch (key) {
+				case "lives":
+					// If lost life, reset board or finish game
+					if (value < 0) {
+						if (this.gameState.lives > 0) {
+							this.createBoard();
+						} else {
+							this.gameFinished();
+						}
+					}
+					break;
+				case "time":
+					this.extraTimeTimer = 25;
+					break;
+
+			}
+		}
 	}
 
 	moveEntities() {
@@ -273,22 +331,12 @@ class GameModule {
 		indeciesToRemove.forEach(index => {
 			let entity = entitiesCtx[index];
 			entitiesCtx.splice(index, 1);
-			gameContext.updateScore(entity.getValue());
-
-			// Restart if enemy hit
-			if (entity.getValue() < 0) {
-				if (--this.lives > 0) {
-					this.createBoard();
-				} else {
-					this.gameFinished();
-				}
-			}
+			gameContext.updateState(entity.getValue());
 		});
 	}
 
 	gameFinished() {
-		window.clearInterval(this.interval);
-		this.gameFinishCallback(this.score);
+		this.gameFinishCallback(this.gameState.score);
 	}
 
 
@@ -326,6 +374,12 @@ class GameModule {
 	}
 
 	getScore() {
-		return this.score;
+		return this.gameState.score;
+	}
+
+	dispose() {
+		window.clearInterval(this.interval);
+		this.backgroundMusic.pause();
+		this.backgroundMusic.currentTime = 0;
 	}
 }

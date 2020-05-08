@@ -73,7 +73,6 @@ section.show {
     display: block;
 }
 
-
 @media screen and (max-height: 900px) {
     .modal {
         max-width: 700px !important;

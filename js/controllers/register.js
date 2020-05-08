@@ -8,7 +8,7 @@ class RegistrationController {
     }
 
     setupValidator() {
-        $('#registration-form').validator();
+        $('#registrationForm').validator();
 
         $.tools.validator.fn('[type=password]', 'Password should contain at least one letter and one digit', function (input, value) {
             return (/[a-z]/.test(value) || /[A-Z]/.test(value))
@@ -21,7 +21,7 @@ class RegistrationController {
         const routerCtx = this.routerModule;
         const authCtx = this.authModule;
 
-        $('#registration-form').validator().submit(function (e) {
+        $('#registrationForm').validator().submit(function (e) {
             var form = $(this);
             // Check client side validation
             if (!e.isDefaultPrevented()) {

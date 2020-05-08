@@ -1,6 +1,8 @@
 class Prize {
     static assetName = "assets/sprites/prize.png";
+    
     moveTicks = 2;
+    persistent = true; // whether it disapears when board resets
 
     constructor(x, y) {
         this.x = x;
@@ -40,6 +42,6 @@ class Prize {
     }
     
     getValue() {
-        return 50;
+        return { score: 50 };
     }
 }

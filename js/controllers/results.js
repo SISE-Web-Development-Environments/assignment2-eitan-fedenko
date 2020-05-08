@@ -4,9 +4,9 @@ class ResultsController {
         const gameModule = appModules['game'];
 
 
-        router.subscribe('result', function () {
+        router.subscribe('result', 'show', function () {
             const score = gameModule.getScore();
-            $('#score-result').text(score);
+            $('#scoreResult').text(score);
         });
     }
 }
