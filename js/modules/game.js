@@ -38,7 +38,7 @@ class GameModule {
 		this.gameState = {
 			lives: 5,
 			score: 0,
-			time: 10
+			time: 60
 		}
 		this.createBoard();
 		this.keysDown = {};
