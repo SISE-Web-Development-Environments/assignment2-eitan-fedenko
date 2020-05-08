@@ -5,13 +5,23 @@
 
 #header {
     background-color: #263238;
+    display: flex;
+    justify-content: space-between;
+    padding-right: 0;
 }
 
 #header > a{
     font-family: BeautyMountains;
-    line-height: 8vh;
     font-size: 5vh;
     color:#FFC107;
+}
+
+#header a {
+    display: block;
+}
+#header > a, .menu-icon {
+    line-height: 8vh;
+    height: 8vh;
 }
 
 #footer {
@@ -19,34 +29,53 @@
     background-color: #263238;
 }
 
-#menu {
-    background-color: #fff176;
-}
-
-#menu > a {
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
     display: inline-block;
-    line-height: 5vh;
-    padding: 0 .5em;
-    font-size: 2.5vh;
-    color: #212121;
-    transition: background-color 0.2s ease-in-out;
-}
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 1.em;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #ddd}
+  
+  /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+  .show {display:block;}
 
-#menu > a.highlight {
-    background-color: #f9a825;
-    font-weight: bold;
-}
-
-#menu > a:hover {
-    background-color: #FFDB21;
-}
+/* Sections */
 
 section {
     display: none;
     position: relative;
-    height: 80vh;
+    height: 85vh;
 }
 
 section.show {
     display: block;
+}
+
+
+@media screen and (max-height: 900px) {
+    .modal {
+        max-width: 700px !important;
+    }
 }

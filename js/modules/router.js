@@ -1,17 +1,22 @@
 class RouterModule {
 	constructor(defaultPage) {
-		var context = this;
+		this.subscriptions = [];
 
-		const pageLinks = $('a[data-route]');
-
-		pageLinks.each(function () {
-			context.processLink(this);
-		});
+		this.prepareLinks();
 
 		this.navigate(defaultPage, 'content');
 	}
 
-	processLink(link) {
+	prepareLinks() {
+		var context = this;
+		const pageLinks = $('a[data-route]');
+
+		pageLinks.each(function () {
+			context.prepareLink(this);
+		});
+	}
+
+	prepareLink(link) {
 		var context = this;
 
 		let route = $(link).data('route');
@@ -26,11 +31,33 @@ class RouterModule {
 	}
 
 	navigate(page) {
+		if (this.currentPage === page)
+			return;
+
 		const sectionContainer = $(`section[data-page=${page}]`);
 
 		this.cleanState();
 
-		$('section').removeClass('show');
-		sectionContainer.addClass('show');
+		$('section').hide();
+		sectionContainer.show();
+
+		// Emit event
+		const subscription = this.subscriptions.find(sub => sub.page === page);
+		if (subscription !== undefined) {
+			subscription.callback();
+		}
+
+		this.currentPage = page;
+	}
+
+	subscribe(page, callback) {
+		this.subscriptions.push({
+			page: page,
+			callback: callback
+		});
+	}
+
+	loginRedirect() {
+		this.navigate('game');
 	}
 }

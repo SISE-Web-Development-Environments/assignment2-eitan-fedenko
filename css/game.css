@@ -1,0 +1,47 @@
+canvas {
+    background-color: rgba(255,255,255,0.2);
+    border: #263238 3px solid;
+}
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+#lblName {
+    position: absolute;
+    top:1em;
+    left:1em;
+    font-size: 1.2em;
+    color: #ffff00;
+}
+
+#game-wrapper {
+    position: relative;
+    flex-grow: 1;
+}
+#game-info {
+    display: flex;
+    justify-content: center;
+}
+    
+#game-info > div {
+    display: inline-block;
+    padding: 1em;
+}
+
+#game-info input {
+    font-size: 1.2em;
+    color: #102027;
+    text-align: center;
+    border-radius: .5em;
+    border: none;
+}
+
+@media screen and (max-height: 900px) {
+    #game-container {
+        flex-direction: row;
+    }
+    #game-info {
+        flex-direction: column;
+    }
+}

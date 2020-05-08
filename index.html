@@ -4,40 +4,50 @@
 <head>
 	<link rel="stylesheet" href="css/theme.css">
 	<link rel="stylesheet" href="css/site.css">
+	<link rel="stylesheet" href="css/game.css">
 	<!-- jQuery -->
-	<script src="./jquery-3.4.1.slim.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+		integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+	<!-- <script src="./jquery-3.4.1.slim.min.js"></script> -->
 	<!-- jQuery Modal -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<!-- jQuery Tools -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tools/1.2.7/jquery.tools.min.js"></script>
-
 	<!-- Site JS -->
+	<script type="text/javascript" src="./js/models/enemy.js"></script>
+	<script type="text/javascript" src="./js/models/prize.js"></script>
 	<script type="text/javascript" src="./js/controllers/register.js"></script>
+	<script type="text/javascript" src="./js/controllers/login.js"></script>
+	<script type="text/javascript" src="./js/controllers/game.js"></script>
+	<script type="text/javascript" src="./js/controllers/results.js"></script>
+	<script type="text/javascript" src="./js/modules/dropdown.js"></script>
 	<script type="text/javascript" src="./js/modules/router.js"></script>
 	<script type="text/javascript" src="./js/modules/auth.js"></script>
-	<script type="text/javascript" src="./js/modules/app.js"></script>
+	<script type="text/javascript" src="./js/modules/game.js"></script>
 	<script type="text/javascript" src="./js/site.js"></script>
 </head>
 
 <body>
 	<div id="header" class="disable-select">
+		<!-- Brand -->
 		<a data-route="welcome">Eitan's Pacman</a>
-	</div>
-	<div id="menu">
-		<!-- Left -->
-		<a data-route="welcome">Home</a>
-		<a data-route="settings">Settings</a>
-		<a href="#about" rel="modal:open">About</a>
-		<a data-route="game">Game</a>
-		<!-- Right -->
-		<a data-route="login" class="pull-right btn">Login</a>
-		<a data-route="register" class="pull-right">Register</a>
+		<!-- Menu -->
+		<div class="dropdown">
+			<a data-dropdown="dropdown-menu">
+				<img src="assets/images/menu.png" alt="Site Menu" class="menu-icon" />
+			</a>
+			<div id="dropdown-menu" class="dropdown-content">
+				<a data-route="settings">Settings</a>
+				<a href="#about" rel="modal:open">About</a>
+			</div>
+		</div>
 	</div>
 	<div id="content">
 		<!-- Welcome -->
 		<section data-page="welcome">
 			<div class="flex-column center-absolute">
+				<p><span class="page-title banner">Welcome!</span></p></br>
 				<a data-route="register" class="btn big">Register</a></br>
 				<a data-route="login" class="btn big">Login</a>
 			</div>
@@ -47,32 +57,32 @@
 		<section data-page="register">
 			<form id="registration-form" class="center-absolute">
 				<fieldset>
-					<h1>Registration</h1>
+					<h1 class="page-title">Registration</h1>
 
 					<p>
-						<label>Username: *</label>
+						<label>Username:</label><br />
 						<input type="text" name="username" pattern="[a-zA-Z0-9]+" minlength="5" maxlength="15"
 							required="required" />
 					</p>
 
 					<p>
-						<label>Password: *</label>
+						<label>Password:</label><br />
 						<input type="password" name="password" minlength="6" required="required" />
 					</p>
 					<p>
-						<label>Full name: *</label>
-						<input type="text" name="name" pattern="[a-zA-Z ]{5,}" maxlength="30" />
+						<label>Full name:</label><br />
+						<input type="text" name="name" pattern="[a-zA-Z ]+" maxlength="30" required="required" />
 					</p>
 					<p>
-						<label>Email: *</label>
+						<label>Email:</label><br />
 						<input type="email" name="email" required="required" />
 					</p>
 					<p>
-						<label>Date of birth: *</label>
+						<label>Date of birth:</label><br />
 						<input type="date" name="birthday" class="date" required="required" />
 					</p>
-					<button type="submit">Submit form</button>
-					<button type="reset">Reset</button>
+					<button type="submit" class="btn">Submit form</button>
+					<button type="reset" class="btn">Reset</button>
 				</fieldset>
 			</form>
 		</section>
@@ -81,19 +91,20 @@
 		<section data-page="login">
 			<form id="login-form" class="center-absolute">
 				<fieldset>
-					<h1>Login</h1>
+					<h1 class="page-title">Login</h1>
 
 					<p>
 						<label>Username:</label>
-						<input type="text" name="username" pattern="[a-zA-Z0-9]+" minlength="5" maxlength="15"
-							required="required" />
+						<input type="text" name="username" required="required" />
 					</p>
 
 					<p>
 						<label>Password:</label>
-						<input type="password" name="password" minlength="6" required="required" />
+						<input type="password" name="password" required="required" />
 					</p>
-				
+
+					<p class="error hide">
+					</p>
 					<button type="submit" class="btn center-margin">Login</button>
 				</fieldset>
 			</form>
@@ -106,25 +117,55 @@
 
 		<!-- About -->
 		<section id="about" class="modal">
-			This app was created by Eitan Fedenko as a 2nd assignment for Web Development Environments course.<br />
-			Eitan is studying at Ben-Gurion university and conveniently working as a Full-stack developer for many
-			years.<br />
-			I didn't have a lot of difficulties with the assignment because of my experience, however since I submitted
-			it by myself, there was a difficulty with time.
+			<h1 class="page-title">About</h1>
+			<p>
+				This app was created by Eitan Fedenko as a 2nd assignment for Web Development Environments course.
+			</p>
+			<p>
+				I am studying at Ben-Gurion university and conveniently working as a Full-stack developer for many
+				years.</p>
+			<p>
+				I didn't have a lot of difficulties with the assignment because of my experience, however since I
+				submitted
+				it by myself, there was a difficulty with time.</p>
+			<p>
+
+				I used jQuery plugin for form validation, including a custom validator for the password.</p>
+			<p>
+				I have not used a template because I feel the point of this exercise is developing from scratch to
+				experience the massive change in web development practices over recent years before templates and
+				frameworks dominated.
+			</p>
 		</section>
 
 		<!-- Game -->
 		<section data-page="game">
-			<div id="score">
-				<label for="lblScore">SCORE:</label>
-				<input id="lblScore" type="text" />
+			<div id="game-container">
+				<label id="lblName"></label>
+				<div id="game-info">
+					<div id="score">
+						<label for="lblScore">SCORE:</label>
+						<input id="lblScore" type="text" />
+					</div>
+					<div id="time">
+						<label for="lblTime">TIME:</label>
+						<input id="lblTime" type="text" />
+					</div>
+					<div id="lives">
+						<label for="lblLives">LIVES:</label>
+						<input id="lblLives" type="text" />
+					</div>
+				</div>
+				<div id="game-wrapper">
+					<canvas id="canvas" class="center-absolute" height="600" width="600"></canvas>
+				</div>
 			</div>
-			<div id="time">
-				<label for="lblTime">TIME:</label>
-				<input id="lblTime" type="text" />
-			</div>
-			<div id="game">
-				<canvas id="canvas" class="center-absolute" height="600" width="600"></canvas>
+		</section>
+
+		<!-- Result -->
+		<section data-page="result">
+			<div class="center-absolute">
+				<p>You have gained <span id="score-result">0</span> points</p>
 			</div>
 		</section>
 	</div>

@@ -1,10 +1,18 @@
-var auth;
-var router;
+var modules = {};
 var controllers = {};
 
 $(document).ready(function () {
-	auth = new AuthModule();
-	router = new RouterModule('welcome');
+	// Create modules
+	modules['auth'] = new AuthModule();
+	modules['router'] = new RouterModule('welcome');
+	modules['game'] = new GameModule();
+	modules['dropdown'] = new DropdownModule();
+
+	// Create controllers
+	controllers['login'] = new LoginController();
 	controllers['registration'] = new RegistrationController();
-	controllers['registration'].bootstrap()
+	controllers['game'] = new GameController();
+	controllers['results'] = new ResultsController();
+	
+	Object.values(controllers).forEach((controller) => { controller.init(modules); });// This calls each controllers init method and injects app modules
 });

@@ -8,17 +8,40 @@ a {
 
 body {
     font-family: sans-serif;
-    font-size: 1.2em;
+    font-size: 1.5em;
     background-color: #102027;
-    color: #BDBDBD;
+    color: #BDBDBD;    
+    overflow: hidden;
 }
 
+.modal {
+    color:  #102027;
+}
+
+.page-title {    
+    display: block;
+    color: #ECEFF1;
+    text-align: center;
+}
+
+.modal .page-title {
+    color: #102027;
+}
+
+.banner{
+    font-size: 3em;
+}
 .pull-right { 
     float:right;
 }
 
 body > div {
     padding: 0 2vw;
+}
+
+
+.hide {
+    display: none;
 }
 
 .center-absolute {
@@ -49,6 +72,20 @@ body > div {
     flex-direction: column;
 }
 
+/* Forms */
+fieldset input[type="text"], fieldset input[type="password"], fieldset input[type="email"], fieldset input[type="date"] {
+    display: block;
+    background: #ffffff;
+    color: #212121;
+    padding: .8em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.error {
+    color: red;
+}
+
 /* Buttons */
 .btn {
     display: inline-block;
@@ -68,5 +105,5 @@ button.btn {
 }
 
 .btn.big {
-    font-size: 2em;
+    font-size: 1.8em;
 }

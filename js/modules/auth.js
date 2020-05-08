@@ -1,18 +1,19 @@
 class AuthModule {
 	constructor() {
-		this.userList = [{ username: 'p', password: 'p' }];
+		this.userList = [{ username: 'p', password: 'p', name: 'Test User (p)' }];
 	}
 
-	register(username, password) {
-		this.userList.push({ username: username, password: password });
+	register(username, password, name) {
+		this.userList.push({ username: username, password: password, name: name });
 	}
 
 	login(username, password) {
-		if (this.userList.some((user) => user.username == username && user.password == password)) {
-			router.navigate('game');
-			return true;
-		} else {
-			return false;
-		}
+		this.currentUser = this.userList.find((user) => user.username == username && user.password == password);
+
+		return this.currentUser !== undefined;
+	}
+
+	getUser() {
+		return this.currentUser;
 	}
 }
