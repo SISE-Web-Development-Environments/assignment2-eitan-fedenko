@@ -8,7 +8,7 @@ a {
 
 body {
     font-family: sans-serif;
-    font-size: 1.5em;
+    font-size: 1.3em;
     background-color: #102027;
     color: #BDBDBD;    
     overflow: hidden;
@@ -72,14 +72,24 @@ body > div {
     flex-direction: column;
 }
 
+.flex-row{
+    display: flex;
+    flex-direction: row;
+}
+
 /* Forms */
-fieldset input[type="text"], fieldset input[type="password"], fieldset input[type="email"], fieldset input[type="date"] {
-    display: block;
+form input[type="text"], form input[type="number"], form input[type="password"], form input[type="email"], form input[type="date"] {
+    display: block !important;
     background: #ffffff;
     color: #212121;
-    padding: .8em;
+    padding: .8em !important;
     width: 100%;
     box-sizing: border-box;
+}
+
+form p {
+    margin-block-start: .5em;
+    margin-block-end: .5em;
 }
 
 .error {

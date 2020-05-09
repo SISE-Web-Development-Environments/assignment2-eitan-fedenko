@@ -28,11 +28,22 @@
 }
 
 #gameInfo input {
+    width: 120px;
+}
+
+#gameInfo input {
     font-size: 1.2em;
     color: #102027;
     text-align: center;
     border-radius: .5em;
     border: none;
+}
+
+#gameSettingSummary {
+    position: absolute;
+    font-size: 14px;
+    left: 0;
+    top: 100px;
 }
 
 #gameCanvas {
@@ -44,7 +55,12 @@
     #gameContainer {
         flex-direction: row;
     }
+
     #gameInfo {
         flex-direction: column;
+    }
+
+    #gameSettingSummary {
+        position: unset;
     }
 }

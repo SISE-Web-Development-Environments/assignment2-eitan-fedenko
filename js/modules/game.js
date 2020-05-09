@@ -30,15 +30,37 @@ class GameModule {
 		this.assets = loaded;
 	}
 
-	startGame(gameFinishCallback) {
+
+	getTotalRemainingFood() {
+		return this.foodRemaining.reduce((a, b) => a + (b.amount || 0), 0);
+	}
+
+	startGame(configuration, gameFinishCallback) {
 		gameTicks = 0;
 		this.board = new Array();
+		const totalFood = configuration.collectiblesAmount;
+
+		let nextFoodType = 10;
+		this.foodRemaining = configuration.collectiblesComposition.map(foodConfig => {
+			return {
+				type: nextFoodType++,
+				amount: foodConfig.percent / 100 * totalFood,
+				points: foodConfig.points,
+				color: foodConfig.color
+			};
+		});
+
+		const disparity = totalFood - this.getTotalRemainingFood();
+		console.log(`After allocating food, need ${disparity} more`)
+		this.foodRemaining[0].amount += disparity;
+
 		this.pac_color = "yellow";
 		this.start_time = new Date();
+		this.config = configuration;
 		this.gameState = {
 			lives: 5,
 			score: 0,
-			time: 60
+			time: configuration.gameTime
 		}
 		this.createBoard();
 		this.keysDown = {};
@@ -46,26 +68,36 @@ class GameModule {
 		addEventListener(
 			"keydown",
 			function (e) {
-				gameContext.keysDown[e.keyCode] = true;
+				for (const keyName in configuration.controls) {
+					if (configuration.controls.hasOwnProperty(keyName)) {
+						if (e.keyCode == configuration.controls[keyName])
+							gameContext.keysDown[keyName] = true;
+					}
+				}
 			},
 			false
 		);
 		addEventListener(
 			"keyup",
 			function (e) {
-				gameContext.keysDown[e.keyCode] = false;
+				for (const keyName in configuration.controls) {
+					if (configuration.controls.hasOwnProperty(keyName)) {
+						if (e.keyCode == configuration.controls[keyName])
+							gameContext.keysDown[keyName] = false;
+					}
+				}
 			},
 			false
 		);
 		this.interval = setInterval(this.gameTick, 250);
 		this.backgroundMusic.play();
+
+		$('#gameSettingSummary').html(JSON.stringify(configuration, null, 4).replace(/\n/g,'<br/>').replace(/ /g,'&nbsp;'));
 	}
 
 	createBoard() {
 		var pacman_remain = 1;
-
 		var cnt = 100;
-		var food_remain = 50;
 		this.board = [
 			[0, 0, 0, 0, 0, 4, 0, 0, 0, 0],
 			[0, 4, 4, 4, 0, 4, 0, 4, 0, 4],
@@ -81,10 +113,7 @@ class GameModule {
 			for (var j = 0; j < boardSize; j++) {
 				if (this.board[i][j] != 4) {
 					var randomNum = Math.random();
-					if (randomNum <= (1.0 * food_remain) / cnt) {
-						food_remain--;
-						this.board[i][j] = 1;
-					} else if (randomNum < (1.0 * (pacman_remain + food_remain)) / cnt) {
+					if (randomNum < (1.0 * (pacman_remain)) / cnt) {
 						this.shape.i = i;
 						this.shape.j = j;
 						pacman_remain--;
@@ -105,18 +134,22 @@ class GameModule {
 			this.board[emptyCell[0]][emptyCell[1]] = 2;
 		}
 
-		while (food_remain > 0) {
-			var emptyCell = this.findRandomEmptyCell();
-			this.board[emptyCell[0]][emptyCell[1]] = 1;
-			food_remain--;
-		}
+		this.foodRemaining.forEach(foodType => {
+			for (let placed = 0; placed <= foodType.amount; placed++) {
+				var emptyCell = this.findRandomEmptyCell();
+				if (emptyCell)
+					this.board[emptyCell[0]][emptyCell[1]] = foodType.type;
+				else break;
+			}
+		});
+
 
 		this.placeEnemies();
 	}
 
 	placeBonusEntities() {
-		// Extra life every 20 seconds * 4 ticks / second = 80 ticks
-		if (gameTicks % (20 * 4) === 15)
+		// Extra life every 30 seconds * 4 ticks / second = 80 ticks
+		if (gameTicks % (30 * 4) === 15)
 			this.placeExtraLife();
 
 		if (this.extraTimeTimer > 0)
@@ -126,48 +159,59 @@ class GameModule {
 	}
 
 	placeExtraTime() {
-		var [x, y] = this.findRandomEmptyCell();
+		var [x, y] = this.findRandomEmptyCell(x => x !== 4);
 		this.entities.push(new ExtraTime(x, y));
 		this.extraTimeTimer = -1;
 	}
 
 	placeExtraLife() {
-		var [x, y] = this.findRandomEmptyCell();
+		var [x, y] = this.findRandomEmptyCell(x => x !== 4);
 		this.entities.push(new ExtraLife(x, y));
 	}
 
 	placeEnemies() {
 		// Position entities
+		let availableEnemies = [
+			new Enemy(0, 0),
+			new Enemy(boardSize - 1, boardSize - 1),
+			new Enemy(0, boardSize - 1),
+			new Enemy(boardSize - 1, 0)];
+
 		this.entities = this.entities
 			.filter(entity => entity.persistent) // Clear non-persistent entities
-			.concat([
-				new Enemy(0, 0),
-				new Enemy(0, boardSize - 1),
-				new Enemy(boardSize - 1, 0),
-				new Enemy(boardSize - 1, boardSize - 1)]);
+			.concat(availableEnemies.slice(0, this.config.enemySpawns));
 	}
 
-	findRandomEmptyCell() {
-		var i = Math.floor(Math.random() * 9 + 1);
-		var j = Math.floor(Math.random() * 9 + 1);
-		while (this.board[i][j] != 0) {
-			i = Math.floor(Math.random() * 9 + 1);
-			j = Math.floor(Math.random() * 9 + 1);
+	findRandomEmptyCell(condition) {
+		var i = Math.floor(Math.random() * 10);
+		var j = Math.floor(Math.random() * 10);
+		let tries = 1000;
+
+		if (condition === undefined)
+			condition = x => x === 0;
+
+		while (!condition(this.board[i][j]) && tries-- > 0) {
+			i = Math.floor(Math.random() * 10);
+			j = Math.floor(Math.random() * 10);
 		}
-		return [i, j];
+
+		if (condition(this.board[i][j]))
+			return [i, j];
+		else
+			return null;
 	}
 
 	getKeyPressed() {
-		if (this.keysDown[38]) {
+		if (this.keysDown['up']) {
 			return 1;
 		}
-		if (this.keysDown[40]) {
+		if (this.keysDown['down']) {
 			return 2;
 		}
-		if (this.keysDown[37]) {
+		if (this.keysDown['left']) {
 			return 3;
 		}
-		if (this.keysDown[39]) {
+		if (this.keysDown['right']) {
 			return 4;
 		}
 	}
@@ -203,16 +247,21 @@ class GameModule {
 					this.context.arc(center.x + rotatedEye.x, center.y + rotatedEye.y, 5, 0, 2 * Math.PI); // circle
 					this.context.fillStyle = "black"; //color
 					this.context.fill();
-				} else if (this.board[i][j] == 1) {
-					this.context.beginPath();
-					this.context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-					this.context.fillStyle = "black"; //color
-					this.context.fill();
 				} else if (this.board[i][j] == 4) {
 					this.context.beginPath();
 					this.context.rect(center.x - 30, center.y - 30, 60, 60);
 					this.context.fillStyle = "grey"; //color
 					this.context.fill();
+				} else {
+					// Check if its a food
+					this.foodRemaining.forEach(foodType => {
+						if (this.board[i][j] === foodType.type) {
+							this.context.beginPath();
+							this.context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+							this.context.fillStyle = foodType.color; //color
+							this.context.fill();
+						}
+					});
 				}
 			}
 		}
@@ -227,44 +276,49 @@ class GameModule {
 	gameTick() {
 		gameTicks++;
 
-		gameContext.updatePosition();
+		gameContext.updatePlayer();
 		gameContext.moveEntities();
 		gameContext.checkEntities();
 		gameContext.placeBonusEntities();
 		gameContext.updateGame();
 	}
 
-	updatePosition() {
+	updatePlayer() {
 		this.board[this.shape.i][this.shape.j] = 0;
-		var x = this.getKeyPressed();
-		if (x == 1) {
+		this.updatePosition();
+		this.checkFood();
+		this.board[this.shape.i][this.shape.j] = 2;
+	}
+
+	updatePosition() {
+		if (this.keysDown['up']) {
 			if (this.shape.j > 0 && this.board[this.shape.i][this.shape.j - 1] != 4) {
 				this.shape.j--;
 				this.rotate = Math.PI * 3 / 2;
 			}
+			return;
 		}
-		if (x == 2) {
+		if (this.keysDown['down']) {
 			if (this.shape.j < 9 && this.board[this.shape.i][this.shape.j + 1] != 4) {
 				this.shape.j++;
 				this.rotate = Math.PI / 2;
 			}
+			return;
 		}
-		if (x == 3) {
+		if (this.keysDown['left']) {
 			if (this.shape.i > 0 && this.board[this.shape.i - 1][this.shape.j] != 4) {
 				this.shape.i--;
 				this.rotate = Math.PI;
 			}
+			return;
 		}
-		if (x == 4) {
+		if (this.keysDown['right']) {
 			if (this.shape.i < 9 && this.board[this.shape.i + 1][this.shape.j] != 4) {
 				this.shape.i++;
 				this.rotate = 0;
 			}
+			return;
 		}
-		if (this.board[this.shape.i][this.shape.j] == 1) {
-			this.gameState.score++;
-		}
-		this.board[this.shape.i][this.shape.j] = 2;
 	}
 
 	updateGame() {
@@ -276,15 +330,12 @@ class GameModule {
 		this.remainingTime = this.gameState.time - time_elapsed;
 
 
-		if (this.remainingTime <= 0) {
+		if (this.remainingTime <= 0 || this.getTotalRemainingFood() === 0) {
 			this.gameFinished();
 		}
 
 		this.draw();
 	}
-
-
-
 
 	updateState(stateDiff) {
 		for (let [key, value] of Object.entries(stateDiff)) {
@@ -303,7 +354,7 @@ class GameModule {
 					}
 					break;
 				case "time":
-					this.extraTimeTimer = 25;
+					this.extraTimeTimer = 25 * 4;
 					break;
 
 			}
@@ -315,6 +366,15 @@ class GameModule {
 
 		this.entities.forEach((enemy) => {
 			enemy.performMove(distanceMatrix);
+		});
+	}
+
+	checkFood() {
+		this.foodRemaining.forEach(foodType => {
+			if (this.board[this.shape.i][this.shape.j] === foodType.type) {
+				this.gameState.score += foodType.points;
+				foodType.amount--;
+			}
 		});
 	}
 
@@ -373,8 +433,8 @@ class GameModule {
 		return distance;
 	}
 
-	getScore() {
-		return this.gameState.score;
+	getState() {
+		return this.gameState;
 	}
 
 	dispose() {

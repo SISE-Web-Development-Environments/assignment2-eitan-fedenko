@@ -39,6 +39,7 @@ class RouterModule {
 		this.cleanState();
 
 		this.invoke(this.currentPage, 'hide');
+		this.previousPage = this.currentPage;
 		$('section').hide();
 		sectionContainer.show();
 
@@ -46,6 +47,11 @@ class RouterModule {
 		this.invoke(page, 'show');
 
 		this.currentPage = page;
+	}
+
+	navigateBack() {
+		if (this.previousPage !== undefined)
+			this.navigate(this.previousPage);
 	}
 
 	invoke(page, event) {

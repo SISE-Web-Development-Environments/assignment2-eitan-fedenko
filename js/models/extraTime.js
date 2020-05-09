@@ -42,6 +42,6 @@ class ExtraTime {
     }
     
     getValue() {
-        return { time: 20 };
+        return { time: 15 };
     }
 }
